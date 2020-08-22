@@ -258,6 +258,10 @@ public class RadiationEntityEventHandler
             float exposure = MapHandler.RADIATION_MAP.getRemExposure(player);
             float prev_exposure = data.getFloat(ASIndirectEffects.NBT_RADS_ENVIROMENT_PREV);
             float delta_exposure = Math.abs(prev_exposure - exposure);
+            
+            float neutrons = MapHandler.NEUTRON_MAP.getNeutronExposure(player);
+            float prev_neutrons = data.getFloat(ASIndirectEffects.NBT_NEUTRON_ENVIROMENT_PREV);
+            float delta_neutrons = Math.abs(prev_neutrons - neutrons);
 
             //Check rad change
             float rad = data.getFloat(ASIndirectEffects.NBT_RADS);
@@ -265,12 +269,13 @@ public class RadiationEntityEventHandler
             float delta_rad = Math.abs(prev_rad - rad);
 
             //Only sync if change has happened in data
-            if (delta_rad > syncError || delta_exposure > syncError || player.ticksExisted % 20 == 0)
+            if (delta_rad > syncError || delta_exposure > syncError || delta_neutrons > syncError || player.ticksExisted % 20 == 0)
             {
                 sendPacket = true;
                 //Update previous, always do in sync to prevent slow creep of precision errors
                 data.setFloat(ASIndirectEffects.NBT_RADS_PREV, rad);
                 data.setFloat(ASIndirectEffects.NBT_RADS_ENVIROMENT_PREV, exposure);
+                data.setFloat(ASIndirectEffects.NBT_NEUTRON_ENVIROMENT_PREV, neutrons);
             }
         }
 
@@ -287,7 +292,8 @@ public class RadiationEntityEventHandler
         PacketSystem.INSTANCE.sendToPlayer(new PacketPlayerRadiation(
                 data.getFloat(ASIndirectEffects.NBT_RADS),
                 MapHandler.RADIATION_MAP.getRemExposure(player),
-                data.getInteger(ASIndirectEffects.NBT_RADS_REMOVE_TIMER)), player);
+                data.getInteger(ASIndirectEffects.NBT_RADS_REMOVE_TIMER),
+                MapHandler.NEUTRON_MAP.getNeutronExposure(player)), player);
     }
 
     @SubscribeEvent
@@ -300,7 +306,7 @@ public class RadiationEntityEventHandler
             {
                 float remExposure = MapHandler.RADIATION_MAP.getRemExposure(event.getEntity());
                 System.out.println(remExposure);
-                PacketSystem.INSTANCE.sendToPlayer(new PacketPlayerRadiation(0, 0, 0), (EntityPlayerMP) event.getEntity());
+                PacketSystem.INSTANCE.sendToPlayer(new PacketPlayerRadiation(0, 0, 0, 0), (EntityPlayerMP) event.getEntity());
             }
         }
     }

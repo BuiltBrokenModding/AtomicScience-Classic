@@ -136,12 +136,14 @@ public final class ASItems
                 () -> ConfigContent.REACTOR.FUEL_ROD_RUNTIME,
                 () -> ConfigRadiation.RADIOACTIVE_MAT_VALUE_FUEL_ROD
                 , () -> ConfigRadiation.RADIOACTIVE_REACTOR_VALUE_FUEL_ROD,
-                () -> ConfigContent.REACTOR.HEAT_REACTOR_FUEL_ROD));
+                () -> ConfigContent.REACTOR.HEAT_REACTOR_FUEL_ROD
+                , () -> ConfigRadiation.NEUTRON_VALUE_FUEL_ROD));
         event.getRegistry().register(itemBreederFuelCell = new ItemFuelRod("breeder_fuel_cell", "cell.fuel.breeder",
                 () -> ConfigContent.REACTOR.BREEDER_ROD_RUNTIME,
                 () -> ConfigRadiation.RADIOACTIVE_MAT_VALUE_BREEDER_ROD
                 , () -> ConfigRadiation.RADIOACTIVE_REACTOR_VALUE_BREEDER_ROD,
-                () -> ConfigContent.REACTOR.HEAT_REACTOR_BREEDER_ROD));
+                () -> ConfigContent.REACTOR.HEAT_REACTOR_BREEDER_ROD
+                , () -> ConfigRadiation.NEUTRON_VALUE_BREEDER_ROD));
 
         //Crafting items
         event.getRegistry().register(itemEmptyCell = new Item()

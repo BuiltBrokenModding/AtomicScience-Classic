@@ -2,6 +2,7 @@ package com.builtbroken.atomic;
 
 import com.builtbroken.atomic.api.accelerator.IAcceleratorMagnet;
 import com.builtbroken.atomic.api.accelerator.IAcceleratorTube;
+import com.builtbroken.atomic.api.neutron.INeutronSource;
 import com.builtbroken.atomic.api.radiation.IRadiationResistant;
 import com.builtbroken.atomic.api.radiation.IRadiationSource;
 import com.builtbroken.atomic.api.thermal.IThermalSource;
@@ -16,11 +17,14 @@ import com.builtbroken.atomic.content.machines.accelerator.magnet.CapabilityMagn
 import com.builtbroken.atomic.content.machines.processing.ProcessorRecipeHandler;
 import com.builtbroken.atomic.lib.MassHandler;
 import com.builtbroken.atomic.lib.placement.PlacementQueue;
+import com.builtbroken.atomic.lib.neutron.NeutronHandler;
 import com.builtbroken.atomic.lib.radiation.RadiationHandler;
 import com.builtbroken.atomic.lib.thermal.ThermalHandler;
 import com.builtbroken.atomic.map.MapHandler;
 import com.builtbroken.atomic.map.exposure.thread.ThreadRadExposure;
 import com.builtbroken.atomic.map.exposure.node.RadSourceMap;
+import com.builtbroken.atomic.map.neutron.node.NeutronSourceMap;
+import com.builtbroken.atomic.map.neutron.thread.ThreadNeutronExposure;
 import com.builtbroken.atomic.map.thermal.thread.ThreadThermalAction;
 import com.builtbroken.atomic.map.thermal.node.ThermalSourceMap;
 import com.builtbroken.atomic.network.netty.PacketSystem;
@@ -144,6 +148,7 @@ public class AtomicScience
         MapHandler.register();
         ThermalHandler.init();
         RadiationHandler.init();
+        NeutronHandler.init();
         MassHandler.init();
 
         proxyLoader = new ProxyLoader("AS");
@@ -205,6 +210,23 @@ public class AtomicScience
                 },
                 () -> new RadSourceMap(0, BlockPos.ORIGIN, 0));
 
+        CapabilityManager.INSTANCE.register(INeutronSource.class, new Capability.IStorage<INeutronSource>()
+        {
+            @Nullable
+            @Override
+            public NBTBase writeNBT(Capability<INeutronSource> capability, INeutronSource instance, EnumFacing side)
+            {
+                return null;
+            }
+
+            @Override
+            public void readNBT(Capability<INeutronSource> capability, INeutronSource instance, EnumFacing side, NBTBase nbt)
+            {
+
+            }
+        },
+        () -> new NeutronSourceMap(0, BlockPos.ORIGIN, 0));
+        
         CapabilityManager.INSTANCE.register(IThermalSource.class, new Capability.IStorage<IThermalSource>()
                 {
                     @Nullable
@@ -306,6 +328,8 @@ public class AtomicScience
         MapHandler.THREAD_RAD_EXPOSURE.start(); //TODO switch to worker thread
         MapHandler.THREAD_THERMAL_ACTION = new ThreadThermalAction();
         MapHandler.THREAD_THERMAL_ACTION.start(); //TODO switch to worker thread
+        MapHandler.THREAD_NEUTRON_EXPOSURE = new ThreadNeutronExposure();
+        MapHandler.THREAD_NEUTRON_EXPOSURE.start(); //TODO switch to worker thread
     }
 
     @Mod.EventHandler
@@ -323,6 +347,7 @@ public class AtomicScience
         //Kill old thread
         MapHandler.THREAD_RAD_EXPOSURE.kill();
         MapHandler.THREAD_THERMAL_ACTION.kill();
+        MapHandler.THREAD_NEUTRON_EXPOSURE.kill();
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.builtbroken.atomic.api.item;
 
+import com.builtbroken.atomic.api.neutron.INeutronItem;
 import com.builtbroken.atomic.api.radiation.IRadioactiveItem;
 import com.builtbroken.atomic.api.reactor.IReactor;
 import net.minecraft.item.ItemStack;
@@ -62,4 +63,13 @@ public interface IFuelRodItem extends IRadioactiveItem
      * @return modified stack
      */
     ItemStack onReactorTick(IReactor reactor, ItemStack stack, int tick, int fuelTick);
+    
+    /**
+     * Strength of neutron radiation the rod represents when active
+     *
+     * @param reactor - reactor consuming the fuel, may be null
+     * @param stack   - fuel rod
+     * @return neutron value
+     */
+    int getNeutronStrength(ItemStack stack, IReactor reactor);
 }

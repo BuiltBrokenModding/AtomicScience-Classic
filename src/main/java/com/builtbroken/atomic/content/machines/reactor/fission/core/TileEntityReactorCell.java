@@ -3,17 +3,21 @@ package com.builtbroken.atomic.content.machines.reactor.fission.core;
 import com.builtbroken.atomic.AtomicScience;
 import com.builtbroken.atomic.api.AtomicScienceAPI;
 import com.builtbroken.atomic.api.item.IFuelRodItem;
+import com.builtbroken.atomic.api.neutron.INeutronSource;
 import com.builtbroken.atomic.api.radiation.IRadiationSource;
 import com.builtbroken.atomic.api.reactor.IFissionReactor;
 import com.builtbroken.atomic.api.thermal.IThermalSource;
 import com.builtbroken.atomic.client.EffectRefs;
 import com.builtbroken.atomic.content.ASBlocks;
+import com.builtbroken.atomic.content.ASItems;
 import com.builtbroken.atomic.content.machines.TileEntityInventoryMachine;
 import com.builtbroken.atomic.content.machines.reactor.fission.controller.TileEntityReactorController;
 import com.builtbroken.atomic.content.machines.pipe.reactor.pass.TileEntityRodPipe;
 import com.builtbroken.atomic.lib.inventory.ItemStackHandlerWrapper;
+import com.builtbroken.atomic.map.MapHandler;
 import com.builtbroken.atomic.map.data.node.MapDataSources;
 import com.builtbroken.atomic.map.exposure.node.RadSourceTile;
+import com.builtbroken.atomic.map.neutron.node.NeutronSourceTile;
 import com.builtbroken.atomic.map.thermal.node.ThermalSource;
 import com.builtbroken.atomic.map.thermal.node.ThermalSourceTile;
 import io.netty.buffer.ByteBuf;
@@ -54,7 +58,9 @@ public class TileEntityReactorCell extends TileEntityInventoryMachine<IItemHandl
 
     private int heatCache;
     private int radCache;
+    private int neutronCache;
 
+    private final NeutronSourceTile<TileEntityReactorCell> neutronSource = new NeutronSourceTile(this, () -> neutronCache, () -> isRunning);
     private final RadSourceTile<TileEntityReactorCell> radiationSource = new RadSourceTile(this, () -> radCache, () -> isRunning);
     private final ThermalSource<TileEntityReactorCell> thermalSource = new ThermalSourceTile(this, () -> heatCache, () -> isRunning);
 
@@ -65,6 +71,7 @@ public class TileEntityReactorCell extends TileEntityInventoryMachine<IItemHandl
         updateStructureType();
         if (!isClient)
         {
+        	MapDataSources.addSource(getNeutronSource());
             MapDataSources.addSource(getRadiationSource());
             MapDataSources.addSource(getHeatSource());
         }
@@ -142,7 +149,7 @@ public class TileEntityReactorCell extends TileEntityInventoryMachine<IItemHandl
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
     {
-        return capability == AtomicScienceAPI.THERMAL_CAPABILITY || capability == AtomicScienceAPI.RADIATION_CAPABILITY || super.hasCapability(capability, facing);
+        return capability == AtomicScienceAPI.THERMAL_CAPABILITY || capability == AtomicScienceAPI.RADIATION_CAPABILITY || capability == AtomicScienceAPI.NEUTRON_CAPABILITY || super.hasCapability(capability, facing);
     }
 
     @Override
@@ -156,6 +163,10 @@ public class TileEntityReactorCell extends TileEntityInventoryMachine<IItemHandl
         else if (capability == AtomicScienceAPI.RADIATION_CAPABILITY)
         {
             return (T) radiationSource;
+        }
+        else if (capability == AtomicScienceAPI.NEUTRON_CAPABILITY)
+        {
+            return (T) neutronSource;
         }
         return super.getCapability(capability, facing);
     }
@@ -176,6 +187,7 @@ public class TileEntityReactorCell extends TileEntityInventoryMachine<IItemHandl
             //Cache values for faster runtime of threads
             heatCache = getHeatGenerated();
             radCache = getRadioactiveMaterial();
+            neutronCache = getNeutronStrength();
         }
         else if (isRunning)
         {
@@ -366,6 +378,16 @@ public class TileEntityReactorCell extends TileEntityInventoryMachine<IItemHandl
 
     protected boolean canOperate()
     {
+    	ItemStack stack = getInventory().getStackInSlot(0);
+    	if(stack.getItem()==ASItems.itemBreederFuelCell)
+    	{
+    		int neutron = MapHandler.NEUTRON_MAP.getNeutronLevel(world, pos);
+    		if(neutron >=1000)
+    		{
+    			return enabled && hasFuel() && getFuelRuntime() >= 0;
+    		}
+    		return false;
+    	}
         //TODO check for safety (water, temp, etc)
         //TODO check if can generate neutrons (controls rods can force off)
         return enabled && hasFuel() && getFuelRuntime() > 0;
@@ -457,6 +479,16 @@ public class TileEntityReactorCell extends TileEntityInventoryMachine<IItemHandl
         if (fuelRod != null)
         {
             return fuelRod.getRadioactiveMaterial(getFuelRodStack(), this);
+        }
+        return 0;
+    }
+    
+    public int getNeutronStrength()
+    {
+        IFuelRodItem fuelRod = getFuelRod();
+        if (fuelRod != null)
+        {
+        	return fuelRod.getNeutronStrength(getFuelRodStack(), this);
         }
         return 0;
     }
@@ -594,6 +626,12 @@ public class TileEntityReactorCell extends TileEntityInventoryMachine<IItemHandl
     public IRadiationSource getRadiationSource()
     {
         return radiationSource;
+    }
+    
+    @Override
+    public INeutronSource getNeutronSource()
+    {
+        return neutronSource;
     }
 
     @Override

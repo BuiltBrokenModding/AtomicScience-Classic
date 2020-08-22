@@ -32,6 +32,8 @@ import java.util.HashMap;
 
 public class ClientProxy extends CommonProxy
 {
+    /** Client Cache: Amount of neutrons in the environment were the player is standing */
+    public static float NEUT_EXPOSURE = 0;
     /** Client Cache: Amount of rads in the environment were the player is standing */
     public static float RAD_EXPOSURE = 0;
     /** Client Cache: Amount of rads the player has taken */
@@ -39,6 +41,8 @@ public class ClientProxy extends CommonProxy
     /** Client Cache: Time until radiation is removed from the player again */
     public static int RAD_REMOVE_TIMER = 0;
 
+    /** Client Cache: Amount of neutrons in the environment were the player is standing */
+    public static float PREV_NEUT_EXPOSURE = 0;
     /** Client Cache: Amount of rads in the environment were the player is standing */
     public static float PREV_RAD_EXPOSURE = 0;
     /** Client Cache: Amount of rads the player has taken */

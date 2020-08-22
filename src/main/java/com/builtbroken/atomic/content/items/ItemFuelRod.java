@@ -32,13 +32,17 @@ public class ItemFuelRod extends ItemRadioactive implements IFuelRodItem
     public final IntSupplier reactorRadioactivity;
     /** Heat of the fuel rod when the reactor is active */
     public final IntSupplier reactorHeatOutput;
+    /** Neutron emissions of the fuel rod when the reactor is active */
+    public final IntSupplier reactorNeutronStrength;
 
-    public ItemFuelRod(String key, String name, IntSupplier maxFuelRuntime, IntSupplier radioactiveMaterialValue, IntSupplier reactorRadioactivity, IntSupplier reactorHeatOutput)
+
+    public ItemFuelRod(String key, String name, IntSupplier maxFuelRuntime, IntSupplier radioactiveMaterialValue, IntSupplier reactorRadioactivity, IntSupplier reactorHeatOutput, IntSupplier reactorNeutronStrength)
     {
         super(key, name, radioactiveMaterialValue);
         this.maxFuelRuntime = maxFuelRuntime;
         this.reactorRadioactivity = reactorRadioactivity;
         this.reactorHeatOutput = reactorHeatOutput;
+        this.reactorNeutronStrength = reactorNeutronStrength;
     }
 
     @Override
@@ -121,4 +125,9 @@ public class ItemFuelRod extends ItemRadioactive implements IFuelRodItem
             items.add(setFuelTime(new ItemStack(this), 0));
         }
     }
+	@Override
+	public int getNeutronStrength(ItemStack stack, IReactor reactor) {
+		return reactorNeutronStrength.getAsInt();
+	}
+
 }

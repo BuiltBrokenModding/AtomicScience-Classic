@@ -3,6 +3,8 @@ package com.builtbroken.atomic.api;
 import com.builtbroken.atomic.api.accelerator.IAcceleratorMagnet;
 import com.builtbroken.atomic.api.accelerator.IAcceleratorTube;
 import com.builtbroken.atomic.api.effect.IIndirectEffectType;
+import com.builtbroken.atomic.api.neutron.INeutronExposureSystem;
+import com.builtbroken.atomic.api.neutron.INeutronSource;
 import com.builtbroken.atomic.api.radiation.IRadiationExposureSystem;
 import com.builtbroken.atomic.api.radiation.IRadiationResistant;
 import com.builtbroken.atomic.api.radiation.IRadiationSource;
@@ -20,6 +22,9 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
  */
 public final class AtomicScienceAPI
 {
+    /** Generic neutron application, used to apply neutron radiation to entity (does not cause damage) */
+    public static IIndirectEffectType NEUTRON;
+    
     /** Generic radiation application, used to apply radiation to entity (does not cause damage) */
     public static IIndirectEffectType RADIATION;
 
@@ -32,6 +37,9 @@ public final class AtomicScienceAPI
     //  result in mixed logic of some stuff changing while others don't.
     /** System used to access radiation exposure information */
     public static IRadiationExposureSystem radiationExposureSystem;
+    
+    /** System used to access neutron exposure information */
+    public static INeutronExposureSystem neutronExposureSystem;
 
     /** System used to access radioactive material data on the map */
     public static IRadioactiveMaterialSystem radioactiveMaterialSystem;
@@ -41,6 +49,9 @@ public final class AtomicScienceAPI
 
     @CapabilityInject(IThermalSource.class)
     public static Capability<IThermalSource> THERMAL_CAPABILITY = null;
+    
+    @CapabilityInject(INeutronSource.class)
+    public static Capability<INeutronSource> NEUTRON_CAPABILITY = null;
 
     @CapabilityInject(IRadiationSource.class)
     public static Capability<IRadiationSource> RADIATION_CAPABILITY = null;

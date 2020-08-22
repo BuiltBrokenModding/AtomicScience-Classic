@@ -104,11 +104,20 @@ public class ConfigRadiation extends ContentProxy
 
     public static int RADIOACTIVE_REACTOR_VALUE_FUEL_ROD = RADIOACTIVE_MAT_VALUE_FUEL_ROD * 100;
     public static int RADIOACTIVE_REACTOR_VALUE_BREEDER_ROD = RADIOACTIVE_MAT_VALUE_BREEDER_ROD * 100;
+    
+    public static int NEUTRON_VALUE_FUEL_ROD = RADIOACTIVE_REACTOR_VALUE_FUEL_ROD * 2;
+    public static int NEUTRON_VALUE_BREEDER_ROD = 0;
 
     public static float RADIATION_DECAY_PER_BLOCK = 0.05f;
     public static float RADIATION_DECAY_PER_FLUID = 0.15f;
     public static float RADIATION_DECAY_METAL = 0.50f;
     public static float RADIATION_DECAY_STONE = 0.20f;
+    
+    public static float NEUTRON_DECAY_PER_BLOCK = 0.10f;
+    public static float NEUTRON_DECAY_PER_FLUID = 0.45f;
+    public static float NEUTRON_DECAY_METAL = 0.25f;
+    public static float NEUTRON_DECAY_STONE = 0.30f;
+
 
     public ConfigRadiation()
     {

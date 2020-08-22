@@ -46,14 +46,17 @@ public class RenderRadOverlay
                 final float rad_player = interpolate(ClientProxy.PREV_RAD_PLAYER, ClientProxy.RAD_PLAYER, event.getPartialTicks());
                 final float rad_area = interpolate(ClientProxy.PREV_RAD_EXPOSURE, ClientProxy.RAD_EXPOSURE, event.getPartialTicks());
                 final float rad_dead_min = ConfigRadiation.RADIATION_DEATH_POINT / (60 * 20); //Radiation needed to die in 1 min
+                final float neutron_area = interpolate(ClientProxy.PREV_NEUT_EXPOSURE, ClientProxy.NEUT_EXPOSURE, event.getPartialTicks());
 
                 //Format
                 String remDisplay = formatDisplay("PER:", rad_player, "rem");
                 String radDisplay = formatDisplay("ENV: ", rad_area * 20, "rem/s");
+                String neuDisplay = formatDisplay("NEUT: ", neutron_area * 20, "neu/s");
 
                 //Render
                 renderTextWithShadow(remDisplay, left, top, interpolate(startColor, endColor, rad_player / ConfigRadiation.RADIATION_DEATH_POINT).getRGB());
                 renderTextWithShadow(radDisplay, left, top + 10, interpolate(startColor, endColor, rad_area / rad_dead_min).getRGB());
+                renderTextWithShadow(neuDisplay, left, top + 20, interpolate(startColor, endColor, neutron_area / rad_dead_min).getRGB());
 
                 if (AtomicScience.runningAsDev)
                 {
@@ -63,6 +66,7 @@ public class RenderRadOverlay
                 //Set prev
                 ClientProxy.PREV_RAD_PLAYER = rad_player;
                 ClientProxy.PREV_RAD_EXPOSURE = rad_area;
+                ClientProxy.PREV_NEUT_EXPOSURE = neutron_area;
 
                 //End
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
